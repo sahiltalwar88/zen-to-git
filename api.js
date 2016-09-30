@@ -4,8 +4,8 @@ const fs = require('fs')
 const ZENHUB_OUTPUT_FILENAME = 'zenhub_pipelines.json'
 const GITHUB_OUTPUT_FILENAME = 'github_issues.json'
 
-const GITHUB_TOKEN = '6d03676d49edf64c8c70e7da1d08c415662ae6ef'
-const ZENHUB_TOKEN = 'b7a4528e3494b24faaba007a10f4a1fe327d771fdfafadf5e4dc6d67e3b95e2c623ce52f525a5b4c'
+const GITHUB_TOKEN = process.argv[2]
+const ZENHUB_TOKEN = process.argv[3]
 
 const LABEL_NAME = 'Squad: Records'
 const PROJECT_NUMBER = 5
