@@ -1,0 +1,22 @@
+{
+  "name": "zen-to-git",
+  "version": "1.0.0",
+  "description": "Moves issues from Zenhub to Github projects while preserving order",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "zentogit": "index.js"
+  },
+  "keywords": [
+    "node",
+    "cli"
+  ],
+  "author": "Sahil Talwar",
+  "license": "ISC",
+  "dependencies": {
+    "http-as-promised": "^1.1.0",
+    "octonode": "^0.7.6"
+  }
+}
