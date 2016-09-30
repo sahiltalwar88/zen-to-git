@@ -11,7 +11,11 @@ const addIssuesToProject = (column, issues) => {
 }
 
 Promise.all([ api.getZenhubPipelines(), api.getGithubIssues(), api.getGithubProjectColumns() ])
-  .then((pipelines, issues, columns) => {
+  .then(responses => {
+    const pipelines = responses[0]
+    const issues = responses[1]
+    const columns = responses[2]
+
     console.log('asdf')
     pipelines.forEach(pipeline => {
       const pipelineIssues = pipeline.issues.filter(({ issue_number }) => issues.some(issue => issue.number === issue_number))
