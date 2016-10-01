@@ -17,6 +17,6 @@
   "license": "ISC",
   "dependencies": {
     "http-as-promised": "^1.1.0",
-    "octonode": "^0.7.6"
+    "parse-link-header": "^0.4.1"
   }
 }
