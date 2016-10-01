@@ -38,57 +38,29 @@ const getZenhubPipelines = () => {
   }).catch(error => console.error('Error getting Zenhub pipelines: ', error))
 }
 
-// const getGithubIssues = () => {
-//   console.log('Requesting all issues in repo from Github...')
-//
-//   return $http('https://api.github.com/repos/lanetix/issues/issues', { headers: githubAuthHeaders })
-//   .spread((response, body) => {
-//     console.log('Issues received, writing to file...')
-//
-//     writeFile(GITHUB_OUTPUT_FILENAME, body, 'Issues saved!')
-//
-//     const issues = JSON.parse(body)
-//     return issues.filter(issue => issue.labels.some(label => label.name === LABEL_NAME))
-//   }).catch(error => {
-//     console.error('Error getting Github issues: ', error)
-//   })
-// }
-
 const getGithubIssues = () => {
   console.log('Requesting all issues in repo from Github...')
 
-  let issues = []
-  let currentPage = 0
-  const requests = []
-
-  $http(`https://api.github.com/repos/lanetix/issues/issues?page=${currentPage}&per_page=100`, { headers: githubAuthHeaders })
+  let currentPage = 1
+  return $http(`https://api.github.com/repos/lanetix/issues/issues?page=${currentPage}&per_page=100&state=all`, { headers: githubAuthHeaders })
     .spread((response, body) => {
+      const requests = []
       let currentPageIssues = JSON.parse(body)
-      issues = issues.concat(currentPageIssues)
-      // console.log('currentPageIssues', currentPageIssues)
+      let issues = currentPageIssues
 
       const parsed = parse(response.headers.link)
-      console.log('parsed', parsed)
       const lastPage = parseInt(parsed.last.page, 10)
-      console.log('lastPage', lastPage)
 
-      for (currentPage = 1; currentPage <= 2; currentPage++) {
-        requests.push($http(`https://api.github.com/repositories/15827400/issues?page=${currentPage}`, { headers: githubAuthHeaders }))
+      for (currentPage = 2; currentPage <= lastPage; currentPage++) {
+        requests.push($http(`https://api.github.com/repositories/15827400/issues?page=${currentPage}&per_page=100&state=all`, { headers: githubAuthHeaders, resolve: 'body' }))
       }
-      console.log('issues.length', issues.length)
-      Promise.all(requests).then(responses => {
-        responses.forEach(response => {
-          const wtf = response
-          console.log('wtf', wtf)
-          issues = issues.concat(wtf)
-        })
 
-        console.log('issues.length', issues.length)
+      return Promise.all(requests).then(responses => {
+        responses.forEach(response => issues = issues.concat(JSON.parse(response)))
         const filteredIssues = issues.filter(issue => issue.labels.some(label => label.name === LABEL_NAME))
-        console.log('filteredIssues.length', filteredIssues.length)
-        console.log('Issues received, writing to file...')
-        writeFile(GITHUB_OUTPUT_FILENAME, filteredIssues, 'Issues saved!')
 
+        console.log('Issues received, writing to file...')
+        writeFile(GITHUB_OUTPUT_FILENAME, JSON.stringify(filteredIssues, null, 2), 'Issues saved!')
         return filteredIssues
       })
     }).catch(error => console.error('Error getting Github issues: ', error))
